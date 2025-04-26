@@ -402,10 +402,9 @@ public class OrderBean
 		ps2.setInt(1, orderId);
 
 		boolean res = false;
-		res = ps.executeUpdate() > 0;
-		res = ps1.executeUpdate() > 0;
-		res = ps2.executeUpdate() > 0;
-
+		if(ps.executeUpdate() > 0 && ps1.executeUpdate() > 0 && ps2.executeUpdate() > 0) {
+			res = true;
+		}
 		return res;
 	}
 

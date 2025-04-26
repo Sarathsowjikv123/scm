@@ -87,6 +87,9 @@ public class OrderAPI extends HttpServlet
 				{
 					conn.commit();
 					response.getWriter().write(Responses.RESPONSE_SUCCESS_MSG.toString());
+				} else {
+					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
 				}
 			} catch(SQLException e) {
 				try
