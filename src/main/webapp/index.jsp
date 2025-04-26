@@ -30,15 +30,8 @@
             <p id="new-org-msg"></p>
         </form>
     </div>
-    <button type="button" onclick="sendOTP()">Send OTP</button>
     <!--<div id="new-org-result"></div>-->
 </center>
-<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script type="text/javascript">
-    (function(){
-        emailjs.init("M7OxCccYBMcEJtEtn"); // Replace with your actual EmailJS Public Key
-    })();
-</script>
 <script>
     document.getElementById("new-org").style.display = "none";
     document.getElementById("show-new-org-form").addEventListener("submit", showAddNewOrgForm);
@@ -109,17 +102,6 @@
             }
         };
         xhttp.send(JSON.stringify(data));
-    }
-
-    function sendOTP() {
-        console.log("Send OTP Called !!!");
-        console.log("Send OTP Called !!!");
-        emailjs.sendForm("service_iebzgb9", "template_vku272f", this)
-            .then(() => {
-            alert("Email sent successfully!");
-        }, (error) => {
-            console.error("Failed to send email:", error);
-        });
     }
 </script>
 </body>
