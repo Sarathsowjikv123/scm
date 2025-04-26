@@ -1,0 +1,12 @@
+package com.ppascm.Product;
+
+public class Queries
+{
+	protected static final String CREATE_PRODUCT_QUERY = "INSERT INTO ProductsTable (product_type_id, name, profit_percentage, production_time_in_mins, quantity_available, quantity_required) values (?, ?, ?, ?, ?, ?)";
+	protected static final String UPDATE_PRODUCT_QUERY = "UPDATE ProductsTable set product_type_id=?, name=?, profit_percentage=?, production_time_in_mins=?, quantity_available=?, quantity_required=? where product_id = ?";
+	protected static final String DELETE_PRODUCT_QUERY = "delete from ProductsTable WHERE product_id = ?";
+	protected static final String GET_PRODUCT_QUERY_BY_ID = "select tt.product_id, tt.name, tt.type, tt.cost_price,((tt.profit_percentage/100)*tt.cost_price)+tt.cost_price as selling_price, tt.production_time_in_mins, tt.quantity_available, tt.quantity_required from \n"
+		+ "(SELECT pt.product_id, pt.name, ptt.type, (select cost_price from (SELECT prt.product_id, GROUP_CONCAT(prt.raw_material_id SEPARATOR ',') AS raw_materials_req, GROUP_CONCAT(prt.raw_material_quantity SEPARATOR ',') as raw_material_quantity, SUM(rmt.price * prt.raw_material_quantity) as cost_price from ProductRawMaterialsTable prt join RawMaterialsTable rmt on prt.raw_material_id = rmt.raw_material_id  where prt.product_id = pt.product_id GROUP BY prt.product_id) as t1) as cost_price,pt.profit_percentage,pt.production_time_in_mins, pt.quantity_available, pt.quantity_required  from ProductsTable pt JOIN ProductTypeTable ptt on pt.product_type_id = ptt.product_type_id)as tt where tt.product_id = ?";
+	protected static final String GET_ALL_PRODUCT_QUERY = "select tt.product_id, tt.name, tt.type, tt.cost_price,((tt.profit_percentage/100)*tt.cost_price)+tt.cost_price as selling_price, tt.production_time_in_mins, tt.quantity_available, tt.quantity_required from \n"
+		+ "(SELECT pt.product_id, pt.name, ptt.type, (select cost_price from (SELECT prt.product_id, GROUP_CONCAT(prt.raw_material_id SEPARATOR ',') AS raw_materials_req, GROUP_CONCAT(prt.raw_material_quantity SEPARATOR ',') as raw_material_quantity, SUM(rmt.price * prt.raw_material_quantity) as cost_price from ProductRawMaterialsTable prt join RawMaterialsTable rmt on prt.raw_material_id = rmt.raw_material_id  where prt.product_id = pt.product_id GROUP BY prt.product_id) as t1) as cost_price,pt.profit_percentage,pt.production_time_in_mins, pt.quantity_available, pt.quantity_required  from ProductsTable pt JOIN ProductTypeTable ptt on pt.product_type_id = ptt.product_type_id)as tt";
+}
