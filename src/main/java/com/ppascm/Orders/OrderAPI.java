@@ -144,6 +144,21 @@ public class OrderAPI extends HttpServlet
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
 			}
+		} else if (pathInfo.length() > 1 & pathInfo.contains("/po")) {
+			String pathParam = pathInfo.split("/")[2];
+			int poID = Integer.parseInt(pathParam);
+			try {
+				JSONArray res = OrderBean.getPurchaseOrderById(poID);
+				if(!res.isEmpty()){
+					response.getWriter().write(res.toString());
+				} else {
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
+				}
+			} catch(SQLException e) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
+			}
 		}
 		else if(pathInfo.length() > 1)
 		{

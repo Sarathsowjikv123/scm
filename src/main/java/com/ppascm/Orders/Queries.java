@@ -7,7 +7,7 @@ import com.ppascm.ProductType.ProductTypeBean;
 
 public class Queries
 {
-	protected static final String CREATE_ORDER_QUERY = "insert into OrderStatus (order_type, customer_or_vendor_id, status) VALUES (?, ?, ?)";
+	protected static final String CREATE_ORDER_QUERY = "insert into OrderStatus (order_type, customer_or_vendor_id, status, ordered_date) VALUES (?, ?, ?, ?)";
 	protected static final String CREATE_ORDER_AND_JOBS = "insert into OrdersAndJobs (order_id, product_id, quantity) values (?, ?, ?)";
 	protected static final String CREATE_JOBS_QUERY = "insert into jobstable (job_id, worker_id, machine_id, start_time, end_time, status, order_id) values (?,?,?,?,?,?,?)";
 	protected static final String CREATE_WAITING_JOB_QUERY = "insert into jobstable (job_id, status, order_id) values (?,?,?)";
@@ -24,7 +24,7 @@ public class Queries
 	protected static final String GET_JOB = "select * from jobstable where job_id = ?";
 	protected static final String GET_JOBS_FROM_ORDER_ID = "SELECT job_id FROM OrdersAndJobs WHERE order_id = ?";
 	protected static final String MARK_JOB_AS_COMPLETED = "update jobstable set status = 'COMPLETED' WHERE worker_id = ? and machine_id = ? and order_id = ? and job_id = ?";
-	protected static final String MARK_ORDER_AS_COMPLETED = "UPDATE OrderStatus SET status = 'COMPLETED' WHERE order_id = ?";
+	protected static final String MARK_ORDER_AS_COMPLETED = "UPDATE OrderStatus SET status = 'COMPLETED', completed_date=? WHERE order_id = ?";
 	protected static final String GET_PRODUCT_FROM_JOB = "SELECT product_id from OrdersAndJobs WHERE job_id = ?";
 	protected static final String GET_PRODUCT_QUANTITY_FROM_JOB = "SELECT quantity from OrdersAndJobs WHERE job_id = ?";
 	protected static final String GET_ORDER_ID_FROM_JOB = "SELECT order_id from OrdersAndJobs WHERE job_id = ?";
@@ -36,6 +36,9 @@ public class Queries
 	//protected static final String GET_ALL_ORDER_DETAILS = "select jt.order_id,jt.job_id,jt.worker_id,wt.name as worker_name,jt.machine_id,mt.name as machine_name,oj.product_id,pt.name as product_name,oj.quantity,jt.start_time,jt.end_time,jt.status from jobstable jt join OrdersAndJobs oj on oj.job_id = jt.job_id join WorkersTable wt on wt.worker_id = jt.worker_id join machinestable mt on mt.machine_id = jt.machine_id join ProductsTable pt on pt.product_id = oj.product_id";
 	protected static final String GET_ALL_ORDER_DETAILS = "select jt.order_id,jt.job_id,jt.worker_id,wt.name as worker_name,jt.machine_id,mt.name as machine_name,oj.product_id,pt.name as product_name,oj.quantity,jt.start_time,jt.end_time,jt.status from jobstable jt left join OrdersAndJobs oj on oj.job_id = jt.job_id left join WorkersTable wt on wt.worker_id = jt.worker_id left join machinestable mt on mt.machine_id = jt.machine_id left join ProductsTable pt on pt.product_id = oj.product_id";
 	protected static final String GET_ORDER_BY_ID = "select jt.order_id,jt.job_id,jt.worker_id,wt.name as worker_name,jt.machine_id,mt.name as machine_name,oj.product_id,pt.name as product_name,oj.quantity,jt.start_time,jt.end_time,jt.status from jobstable jt join OrdersAndJobs oj on oj.job_id = jt.job_id join WorkersTable wt on wt.worker_id = jt.worker_id join machinestable mt on mt.machine_id = jt.machine_id join ProductsTable pt on pt.product_id = oj.product_id where jt.order_id = ?";
-	protected static final String CHANGE_PO_STATUS = "update OrderStatus set status='RECEIVED' WHERE order_id = ? AND order_type = 'PURCHASE'";
-	protected static final String GET_PURCHASE_ORDERS = "select * from OrderStatus where order_type = 'PURCHASE'";
+	protected static final String CHANGE_PO_STATUS = "update OrderStatus set status='RECEIVED', completed_date=? WHERE order_id = ? AND order_type = 'PURCHASE'";
+	protected static final String GET_PURCHASE_ORDERS = "select os.*, oj.product_id, pt.name, oj.quantity from OrderStatus os join OrdersAndJobs oj on os.order_id = oj.order_id join ProductsTable pt on pt.product_id = oj.product_id where order_type = 'PURCHASE'";
+	protected static final String ADD_ORDER_TRACKING = "INSERT INTO CustomerOrderTrackingTable(order_id, delivery_status) VALUES (?, ?)";
+	protected static final String UPDATE_TRACKING = "UPDATE CustomerOrderTrackingTable SET delivery_status=? WHERE order_id=?";
+	protected static final String GET_PO_BY_ID = "select os.*, oj.product_id, pt.name, oj.quantity from OrderStatus os join OrdersAndJobs oj on os.order_id = oj.order_id join ProductsTable pt on pt.product_id = oj.product_id where order_type = 'PURCHASE' and os.order_id = ?";
 }

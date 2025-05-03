@@ -65,7 +65,24 @@ public class FactoryAPI extends HttpServlet {
 			{
 				throw new RuntimeException(e);
 			}
-		} else if(pathInfo.length() > 1) {
+		} else if(pathInfo.length() > 1 & pathInfo.contains("/pt")) {
+			pathParam = pathInfo.split("/")[2];
+			int factoryPId = Integer.parseInt(pathParam);
+			try {
+				JSONArray res = FactoryBean.getFactoryByPId(factoryPId);
+				if(!res.isEmpty()){
+					response.getWriter().write(res.toString());
+				} else {
+					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
+				}
+			}
+			catch(SQLException e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+		else if(pathInfo.length() > 1) {
 			pathParam = pathInfo.split("/")[1];
 			int factoryId = Integer.parseInt(pathParam);
 			try {

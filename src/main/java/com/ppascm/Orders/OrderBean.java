@@ -5,8 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +29,8 @@ public class OrderBean
 		ps.setString(1, orderType);
 		ps.setInt(2, customerOrVendorId);
 		ps.setString(3, status);
+		LocalDate orderedDate = LocalDate.now();
+		ps.setString(4, orderedDate.toString());
 		boolean res = ps.executeUpdate() > 0;
 		ResultSet rs = ps.getGeneratedKeys();
 		int orderId = -1;
@@ -73,6 +79,7 @@ public class OrderBean
 						changeMachineStatus(freeMachineId, "WORKING");
 						changeOrderStatus(orderId, "IN PROGRESS");
 						allJobs = 1;
+						addOrderTracking(orderId, PPstatus);
 					}
 					else
 					{
@@ -88,6 +95,7 @@ public class OrderBean
 					if(createJob(jobId, freeWorkerId, freeMachineId, orderId, productionTime, PPstatus))
 					{
 						allJobs = 1;
+						addOrderTracking(orderId, PPstatus);
 					}
 					else
 					{
@@ -103,10 +111,29 @@ public class OrderBean
 		return false;
 	}
 
+	public static void addOrderTracking(int orderId, String status) throws SQLException
+	{
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = conn.prepareStatement(Queries.ADD_ORDER_TRACKING);
+		ps.setInt(1, orderId);
+		ps.setString(2, status);
+		ps.executeUpdate();
+	}
+
+	public static void updateOrderTracking(int orderId, String status) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = conn.prepareStatement(Queries.UPDATE_TRACKING);
+		ps.setString(1, status);
+		ps.setInt(2, orderId);
+		ps.executeUpdate();
+	}
+
 	public static boolean changePurchaseOrderStatus(int orderID, String status) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = conn.prepareStatement(Queries.CHANGE_PO_STATUS);
-		ps.setInt(1, orderID);
+		LocalDate completedDate = LocalDate.now();
+		ps.setString(1, completedDate.toString());
+		ps.setInt(2, orderID);
 		return ps.executeUpdate() > 0;
 	}
 
@@ -121,6 +148,11 @@ public class OrderBean
 			obj.put("order_type", rs.getString(2));
 			obj.put("vendor_id", rs.getInt(3));
 			obj.put("status", rs.getString(4));
+			obj.put("ordered_date", rs.getString(5));
+			obj.put("completed_date", rs.getString(6));
+			obj.put("product_id", rs.getInt(7));
+			obj.put("product_name", rs.getString(8));
+			obj.put("quantity", rs.getInt(9));
 			poArray.put(obj);
 		}
 		return poArray;
@@ -378,11 +410,13 @@ public class OrderBean
 			if(rs.getInt(1) == 1)
 			{
 				PreparedStatement ps = conn.prepareStatement(Queries.MARK_ORDER_AS_COMPLETED);
-				ps.setInt(1, orderId);
+				LocalDate completedDate = LocalDate.now();
+				ps.setString(1, completedDate.toString());
+				ps.setInt(2, orderId);
 				ps.executeUpdate();
+				updateOrderTracking(orderId, "SHIPPED");
 			}
 		}
-
 	}
 
 	public static int getProductFromJobId(int jobId) throws SQLException {
@@ -441,6 +475,11 @@ public class OrderBean
 
 	public static JSONArray getAllOrders() throws SQLException
 	{
+		DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+			.appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+			.appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true)
+			.toFormatter();
+		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd '-' HH:mm:ss");
 		JSONArray ordersArray = new JSONArray();
 		Connection conn = DBConnection.getConnection();
 		Statement stmt = conn.createStatement();
@@ -456,8 +495,12 @@ public class OrderBean
 			obj.put("product_id", rs.getInt(7));
 			obj.put("product_name", rs.getString(8));
 			obj.put("quantity", rs.getInt(9));
-			obj.put("start_time", rs.getString(10));
-			obj.put("end_time", rs.getString(11));
+			LocalDateTime startTime = LocalDateTime.parse(rs.getString(10), formatter);
+			String startTimeFormatted = startTime.format(outputFormatter);
+			obj.put("start_time", startTimeFormatted);
+			LocalDateTime endTime = LocalDateTime.parse(rs.getString(11), formatter);
+			String endTimeFormatted = endTime.format(outputFormatter);
+			obj.put("end_time", endTimeFormatted);
 			obj.put("status", rs.getString(12));
 			ordersArray.put(obj);
 		}
@@ -485,6 +528,29 @@ public class OrderBean
 			obj.put("start_time", rs.getString(10));
 			obj.put("end_time", rs.getString(11));
 			obj.put("status", rs.getString(12));
+			ordersArray.put(obj);
+		}
+		return ordersArray;
+	}
+
+	public static JSONArray getPurchaseOrderById(int orderId) throws SQLException {
+		JSONArray ordersArray = new JSONArray();
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = conn.prepareStatement(Queries.GET_PO_BY_ID);
+		ps.setInt(1, orderId);
+		ResultSet rs = ps.executeQuery();
+		while(rs.next())
+		{
+			JSONObject obj = new JSONObject();
+			obj.put("order_id", rs.getInt(1));
+			obj.put("order_type", rs.getString(2));
+			obj.put("vendor_id", rs.getInt(3));
+			obj.put("status", rs.getString(4));
+			obj.put("ordered_date", rs.getString(5));
+			obj.put("completed_date", rs.getString(6));
+			obj.put("product_id", rs.getInt(7));
+			obj.put("product_name", rs.getString(8));
+			obj.put("quantity", rs.getInt(9));
 			ordersArray.put(obj);
 		}
 		return ordersArray;

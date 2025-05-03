@@ -161,7 +161,7 @@ if(session.getAttribute("org-id") != null){
         <form action="" method="post" id="add-worker-form">
             <h3>Add Worker</h3>
             Name : <input type="text" id="worker-name" name="worker-name" required><br>
-            Product type Id :
+            Worker type Id :
             <select id="worker-type-id" name="worker-type-id" required>
             </select><br>
             Factory Id :
@@ -723,6 +723,35 @@ if(session.getAttribute("org-id") != null){
                 <td>Vendor Id</td>
                 <td>Order Type</td>
                 <td>Status</td>
+                <td>Ordered Date</td>
+                <td>Completed Date</td>
+                <td>Product Id</td>
+                <td>Product Name</td>
+                <td>Quantity</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="get-po">
+        <form action="" method="get" id="get-po-form">
+            <h3>Get Purchase Order</h3>
+            <input type="text" id="g-po-id" required>
+            <input type="submit" id="g-po-submit-btn">
+        </form>
+        <table id="po-table">
+            <thead>
+            <tr>
+                <td>Order Id</td>
+                <td>Vendor Id</td>
+                <td>Order Type</td>
+                <td>Status</td>
+                <td>Ordered Date</td>
+                <td>Completed Date</td>
+                <td>Product Id</td>
+                <td>Product Name</td>
+                <td>Quantity</td>
             </tr>
             </thead>
             <tbody>

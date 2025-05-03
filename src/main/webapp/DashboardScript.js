@@ -70,6 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("get-order-all-form").addEventListener("submit", getAllOrders);
     document.getElementById("update-po-form").addEventListener("submit", updatePO);
     document.getElementById("get-po-all-form").addEventListener("submit", getAllpo);
+    document.getElementById("get-po-form").addEventListener("submit", getpobyId);
+
 
 
 
@@ -96,9 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("order-all-table").style.display="none";
     document.getElementById("order-table").style.display="none";
     document.getElementById("po-all-table").style.display="none";
-
-
-
+    document.getElementById("po-table").style.display="none";
 });
 
 const selectOrderType = document.getElementById('order-type');
@@ -121,6 +121,20 @@ selectOrderType.addEventListener('change', function() {
             });
         });
 
+        const purl = "http://localhost:8080/product/";
+        sendGETRequest(purl, function(response) {
+
+            //Populating Product Option in New Order form
+            const select = document.getElementById('productSelect');
+            select.innerHTML = '';
+            response.forEach(res => {
+                const option = document.createElement('option');
+                option.value = res.product_id;
+                option.textContent = res.name;
+                select.appendChild(option);
+            });
+        });
+
     } else {
         document.getElementById("order-vendor-id-div").style.display="block";
         document.getElementById("order-customer-id-div").style.display="none";
@@ -131,6 +145,20 @@ selectOrderType.addEventListener('change', function() {
             response.forEach(res => {
                 const option = document.createElement('option');
                 option.value = res.customer_or_vendor_id;
+                option.textContent = res.name;
+                select.appendChild(option);
+            });
+        });
+
+        const rurl = "http://localhost:8080/raw_material/";
+        sendGETRequest(rurl, function(response) {
+
+            //Populating Product Option in New Order form
+            const select = document.getElementById('productSelect');
+            select.innerHTML = '';
+            response.forEach(res => {
+                const option = document.createElement('option');
+                option.value = res.rawMaterial_id;
                 option.textContent = res.name;
                 select.appendChild(option);
             });
@@ -951,6 +979,10 @@ function addOrder(event) {
             alert(resp + " : " + response[resp]);
         }
     });
+
+    document.getElementById('selectedProductsContainer').innerHTML = '';
+    addedProducts.length = 0;
+    quantityOfProducts.length = 0;
 }
 
 function deleteOrder(event) {
@@ -1065,11 +1097,48 @@ function getAllpo(event) {
                 <td>${order.vendor_id}</td>
                 <td>${order.order_type}</td>
                 <td>${order.status}</td>
+                <td>${order.ordered_date}</td>
+                <td>${order.completed_date}</td>
+                <td>${order.product_id}</td>
+                <td>${order.product_name}</td>
+                <td>${order.quantity}</td>
             `;
             tableBody.appendChild(row);
         });
     });
 }
+
+function getpobyId(event) {
+    event.preventDefault();
+    const poId = document.getElementById("g-po-id").value;
+    const url = "http://localhost:8080/order/po/"+poId;
+    sendGETRequest(url, function(response) {
+        document.getElementById("po-table").style.display="none";
+        document.getElementById("po-table").style.display="block";
+        const tableBody = document.querySelector("#po-table tbody");
+        tableBody.innerHTML = "";
+        response.forEach(order => {
+            const row = document.createElement("tr");
+            //            if(order.worker_id === undefined && order.worker_name === undefined) {
+            //                order.worker_id = "NOT ALLOTTED";
+            //                order.worker_name = "NOT ALLOTTED"
+            //            }
+            row.innerHTML = `
+                <td>${order.order_id}</td>
+                <td>${order.vendor_id}</td>
+                <td>${order.order_type}</td>
+                <td>${order.status}</td>
+                <td>${order.ordered_date}</td>
+                <td>${order.completed_date}</td>
+                <td>${order.product_id}</td>
+                <td>${order.product_name}</td>
+                <td>${order.quantity}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    });
+}
+
 
 
 //-------------*************----------------
@@ -1272,31 +1341,33 @@ function showOrderOperations() {
     document.getElementById("order").style.display = "block";
     const products = [];
 
-    const url = "http://localhost:8080/product/";
-    const rurl = "http://localhost:8080/raw_material/";
-    sendGETRequest(url, function(response) {
-
-        //Populating Product Option in New Order form
-        const select = document.getElementById('productSelect');
-        response.forEach(res => {
-            const option = document.createElement('option');
-            option.value = res.product_id;
-            option.textContent = res.name;
-            select.appendChild(option);
-        });
-    });
-
-    sendGETRequest(rurl, function(response) {
-
-        //Populating Product Option in New Order form
-        const select = document.getElementById('productSelect');
-        response.forEach(res => {
-            const option = document.createElement('option');
-            option.value = res.rawMaterial_id;
-            option.textContent = res.name;
-            select.appendChild(option);
-        });
-    });
+//    const url = "http://localhost:8080/product/";
+//    const rurl = "http://localhost:8080/raw_material/";
+//    sendGETRequest(url, function(response) {
+//
+//        //Populating Product Option in New Order form
+//        const select = document.getElementById('productSelect');
+//        select.innerHTML = '';
+//        response.forEach(res => {
+//            const option = document.createElement('option');
+//            option.value = res.product_id;
+//            option.textContent = res.name;
+//            select.appendChild(option);
+//        });
+//    });
+//
+//    sendGETRequest(rurl, function(response) {
+//
+//        //Populating Product Option in New Order form
+//        const select = document.getElementById('productSelect');
+//        select.innerHTML = '';
+//        response.forEach(res => {
+//            const option = document.createElement('option');
+//            option.value = res.rawMaterial_id;
+//            option.textContent = res.name;
+//            select.appendChild(option);
+//        });
+//    });
 }
 
 function addproduct() {

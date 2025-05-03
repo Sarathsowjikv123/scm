@@ -67,6 +67,26 @@ public class FactoryBean
 		return obj;
 	}
 
+	public static JSONArray getFactoryByPId(int pTypeId) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = conn.prepareStatement(Queries.GET_FACTORY_BY_TYPE_ID);
+		JSONArray factories = new JSONArray();
+		ps.setInt(1, pTypeId);
+		ResultSet rs = ps.executeQuery();
+		JSONObject obj = new JSONObject();
+		while(rs.next()){
+			obj.put("factory_id", rs.getInt(1));
+			obj.put("factory_name", rs.getString(2));
+			obj.put("org_name", rs.getString(3));
+			obj.put("type", rs.getString(4));
+			obj.put("location", rs.getString(5));
+			obj.put("date_created", rs.getDate(6));
+			obj.put("org_id", rs.getInt(7));
+			factories.put(obj);
+		}
+		return factories;
+	}
+
 	public static boolean updateFactory(int orgId, int productTypeId, String name, String location, int factoryId) throws SQLException{
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = conn.prepareStatement(Queries.UPDATE_FACTORY_QUERY);
