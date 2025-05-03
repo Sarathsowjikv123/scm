@@ -65,15 +65,14 @@ public class MachineBean
 		return obj;
 	}
 
-	public static boolean updateMachine(int machineId, int factoryId, int productTypeId, String name, String status, int repairCost) throws SQLException {
+	public static boolean updateMachine(int machineId, int factoryId, int productTypeId, String name, int repairCost) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = conn.prepareStatement(Queries.UPDATE_MACHINE_QUERY);
 		ps.setInt(1, factoryId);
 		ps.setInt(2, productTypeId);
 		ps.setString(3,name);
-		ps.setString(4, status);
-		ps.setInt(5, repairCost);
-		ps.setInt(6, machineId);
+		ps.setInt(4, repairCost);
+		ps.setInt(5, machineId);
 		return ps.executeUpdate() > 0;
 	}
 

@@ -1,74 +1,101 @@
-<div id="machine" class="machine">
-    <center><h2>Manage Workers</h2></center>
-    <button type="button" onclick="closeWorkerOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
-    <div id="add-machine">
-        <form action="" method="post" id="add-machine-form">
-            <h3>Add Machine</h3>
-            Name : <input type="text" id="machine-name" name="machine-name" required><br>
-            Product type Id :
-            <select id="machine-type-id" name="machine-type-id" required>
+<!-- Order Forms -->
+<div id="order" class="order">
+    <center><h2>Manage Orders</h2></center>
+    <button type="button" onclick="closeOrderOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
+    <div id="add-order">
+        <form action="" method="post" id="add-order-form">
+            <h3>Add Order</h3>
+            Order Type :
+            <select id="order-type" name="order-type" required>
+                <option value="SALES">SALES</option>
+                <option value="PURCHASE">PURCHASE</option>
             </select><br>
-            Factory Id :
-            <select id="machine-factory-id" name="machine-factory-id" required>
-            </select><br>
-            <input type="submit" id="add-machine-submit-btn">
+            <div id="order-customer-id-div">
+                Customer Id :
+                <select id="order-customer-id" name="order-customer-id" required>
+                </select><br>
+            </div>
+            <div id="order-vendor-id-div">
+                Vendor Id :
+                <select id="order-vendor-id" name="order-vendor-id" required>
+                </select><br>
+            </div>
+            <h4>Select Products</h4>
+            <div id="productsContainer">
+                <!-- Products will be populated here -->
+            </div>
+            <input type="submit" id="add-order-submit-btn">
         </form>
     </div>
-    <div id="update-machine">
-        <form action="" method="put" id="update-machine-form">
-            <h3>Update Machine</h3>
-            Machine Id :
-            <input type="text" id="u-machine-id" name="u-machine-id" required><br>
-            Name : <input type="text" id="u-machine-name" name="u-machine-name" required><br>
-            Product type Id :
-            <select id="u-machine-type-id" name="u-machine-type-id" required>
-            </select><br>
-            Factory Id :
-            <select id="u-machine-factory-id" name="u-machine-factory-id" required>
-            </select><br>
-            <input type="submit" id="u-machine-submit-btn">
+    <!--
+        <div id="update-order">
+            <form action="" method="put" id="update-order-form">
+                <h3>Update Order</h3>
+                Order Id :
+                <input type="text" id="u-order-id" name="u-order-id" required><br>
+                Name : <input type="text" id="u-order-name" name="u-order-name" required><br>
+                Product type Id :
+                <select id="u-order-type-id" name="u-order-type-id" required>
+                </select><br>
+                Factory Id :
+                <select id="u-order-factory-id" name="u-order-factory-id" required>
+                </select><br>
+                <input type="submit" id="u-order-submit-btn">
+            </form>
+        </div>
+    -->
+    <div id="delete-order">
+        <form action="" method="delete" id="delete-order-form">
+            <h3>Delete Order</h3>
+            <input type="text" id="d-order-id" required>
+            <input type="submit" id="d-order-submit-btn">
         </form>
     </div>
-    <div id="delete-machine">
-        <form action="" method="delete" id="delete-machine-form">
-            <h3>Delete Machine</h3>
-            <input type="text" id="d-machine-id" required>
-            <input type="submit" id="d-machine-submit-btn">
+    <div id="get-order">
+        <form action="" method="get" id="get-order-form">
+            <h3>Get Order</h3>
+            <input type="text" id="g-order-id" required>
+            <input type="submit" id="g-order-submit-btn">
         </form>
-    </div>
-    <div id="get-machine">
-        <form action="" method="get" id="get-machine-form">
-            <h3>Get Machine</h3>
-            <input type="text" id="g-machine-id" required>
-            <input type="submit" id="g-machine-submit-btn">
-        </form>
-        <table id="machine-table">
+        <table id="order-table">
             <thead>
             <tr>
+                <td>Order Id</td>
+                <td>Product Id</td>
+                <td>Product</td>
+                <td>Quantity</td>
+                <td>Worker Id</td>
+                <td>Worker name</td>
                 <td>Machine Id</td>
-                <td>Machine Type</td>
                 <td>Machine Name</td>
-                <td>Factory Id</td>
-                <td>Factory Name</td>
+                <td>Start Time</td>
+                <td>End Time</td>
+                <td>Status</td>
             </tr>
             </thead>
             <tbody>
             </tbody>
         </table>
     </div>
-    <div id="get-machine-all">
-        <form action="" method="get" id="get-machine-all-form">
-            <h3>Get All Workers</h3>
-            <input type="submit" id="g-machine-all-submit-btn">
+    <div id="get-order-all">
+        <form action="" method="get" id="get-order-all-form">
+            <h3>Get All Orders</h3>
+            <input type="submit" id="g-order-all-submit-btn">
         </form>
-        <table id="machine-all-table">
+        <table id="order-all-table">
             <thead>
             <tr>
+                <td>Order Id</td>
+                <td>Product Id</td>
+                <td>Product</td>
+                <td>Quantity</td>
+                <td>Worker Id</td>
+                <td>Worker name</td>
                 <td>Machine Id</td>
-                <td>Machine Type</td>
                 <td>Machine Name</td>
-                <td>Factory Id</td>
-                <td>Factory Name</td>
+                <td>Start Time</td>
+                <td>End Time</td>
+                <td>Status</td>
             </tr>
             </thead>
             <tbody>

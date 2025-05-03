@@ -25,7 +25,7 @@ public class OrderBean
 		ps.setString(1, orderType);
 		ps.setInt(2, customerOrVendorId);
 		ps.setString(3, status);
-		ps.executeUpdate();
+		boolean res = ps.executeUpdate() > 0;
 		ResultSet rs = ps.getGeneratedKeys();
 		int orderId = -1;
 
@@ -42,7 +42,7 @@ public class OrderBean
 			ps1.setInt(1, orderId);
 			ps1.setInt(2, products.getInt(i));
 			ps1.setInt(3, quantities.getInt(i));
-			ps1.executeUpdate();
+			boolean resu = ps1.executeUpdate() > 0;
 
 			ResultSet rs1 = ps1.getGeneratedKeys();
 			int jobId = -1;
@@ -65,22 +65,34 @@ public class OrderBean
 
 			if(freeMachineId != -1 && freeWorkerId != -1)
 			{
-				if(createJob(jobId, freeWorkerId, freeMachineId, orderId, productionTime, PPstatus))
+				if(orderType.equals("SALES"))
 				{
-					changeWorkerStatus(freeWorkerId, "WORKING");
-					changeMachineStatus(freeMachineId, "WORKING");
-					changeOrderStatus(orderId, "IN PROGRESS");
-					allJobs = 1;
-				} else {
-					allJobs = 0;
+					if(createJob(jobId, freeWorkerId, freeMachineId, orderId, productionTime, PPstatus))
+					{
+						changeWorkerStatus(freeWorkerId, "WORKING");
+						changeMachineStatus(freeMachineId, "WORKING");
+						changeOrderStatus(orderId, "IN PROGRESS");
+						allJobs = 1;
+					}
+					else
+					{
+						allJobs = 0;
+					}
 				}
-			} else {
-				PPstatus = "YET TO START";
-				if(createJob(jobId, freeWorkerId, freeMachineId, orderId, productionTime, PPstatus))
+			}
+			else
+			{
+				if(orderType.equals("SALES"))
 				{
-					allJobs = 1;
-				} else {
-					allJobs = 0;
+					PPstatus = "YET TO START";
+					if(createJob(jobId, freeWorkerId, freeMachineId, orderId, productionTime, PPstatus))
+					{
+						allJobs = 1;
+					}
+					else
+					{
+						allJobs = 0;
+					}
 				}
 			}
 		}
@@ -91,8 +103,27 @@ public class OrderBean
 		return false;
 	}
 
-	public static void changeOrderStatus(int orderID) throws SQLException {
+	public static boolean changePurchaseOrderStatus(int orderID, String status) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = conn.prepareStatement(Queries.CHANGE_PO_STATUS);
+		ps.setInt(1, orderID);
+		return ps.executeUpdate() > 0;
+	}
 
+	public static JSONArray getAllPO() throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = conn.prepareStatement(Queries.GET_PURCHASE_ORDERS);
+		ResultSet rs = ps.executeQuery();
+		JSONArray poArray = new JSONArray();
+		while(rs.next()) {
+			JSONObject obj = new JSONObject();
+			obj.put("order_id", rs.getInt(1));
+			obj.put("order_type", rs.getString(2));
+			obj.put("vendor_id", rs.getInt(3));
+			obj.put("status", rs.getString(4));
+			poArray.put(obj);
+		}
+		return poArray;
 	}
 
 	public static boolean createJob(int jobId, int workerId, int machineId, int orderId, int productionTime, String Pstatus) throws SQLException

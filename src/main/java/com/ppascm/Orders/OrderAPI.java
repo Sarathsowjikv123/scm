@@ -88,7 +88,7 @@ public class OrderAPI extends HttpServlet
 					conn.commit();
 					response.getWriter().write(Responses.RESPONSE_SUCCESS_MSG.toString());
 				} else {
-					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					//response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
 				}
 			} catch(SQLException e) {
@@ -127,6 +127,24 @@ public class OrderAPI extends HttpServlet
 				response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
 			}
 		}
+		else if(pathInfo.equals("/po"))
+		{
+			try
+			{
+				JSONArray res = OrderBean.getAllPO();
+				if(!res.isEmpty()){
+					response.getWriter().write(res.toString());
+				} else {
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
+				}
+			}
+			catch(SQLException e)
+			{
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
+			}
+		}
 		else if(pathInfo.length() > 1)
 		{
 			String pathParam = pathInfo.split("/")[1];
@@ -144,6 +162,38 @@ public class OrderAPI extends HttpServlet
 			{
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
+			}
+		}
+	}
+
+	public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		String pathInfo = request.getPathInfo();
+		response.setContentType("application/json");
+		if(pathInfo.equals("/")) {
+			StringBuilder json = new StringBuilder();
+			String line;
+			try(BufferedReader reader = request.getReader())
+			{
+				while((line = reader.readLine()) != null)
+				{
+					json.append(line);
+				}
+			}
+			JSONObject object = new JSONObject(json.toString());
+			int orderId = object.getInt("order_id");
+			String status = object.getString("order_status");
+
+			try
+			{
+				if(OrderBean.changePurchaseOrderStatus(orderId, status)){
+					response.getWriter().write(Responses.RESPONSE_SUCCESS_MSG.toString());
+				} else {
+					response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
+				}
+			}
+			catch(SQLException e)
+			{
+				throw new RuntimeException(e);
 			}
 		}
 	}

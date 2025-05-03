@@ -18,7 +18,7 @@ if(session.getAttribute("org-id") != null){
     orgId = (int) session.getAttribute("org-id");
 }
 %>
-
+<!-- Header -->
 <center><h2>Production Planning and Supply Chain Management</h2></center>
 <center><h3>DashBoard</h3></center>
 <center><h3 id="welcome-msg"></h3></center>
@@ -37,8 +37,13 @@ if(session.getAttribute("org-id") != null){
     <button type="button" onclick="showFactoryOperations()"><i class="bi bi-building"></i> Manage Factories</button>
     <button type="button" onclick="showWorkerOperations()"><i class="bi bi-person-badge"></i> Manage Workers</button>
     <button type="button" onclick="showCustomerAndVendorOperations()"><i class="bi bi-person-square"></i> Manage Customers And Vendors</button>
+    <button type="button" onclick="showMachineOperations()"><i class="bi bi-gear"></i> Manage Machines</button>
+    <button type="button" onclick="showRawMaterialOperations()"><i class="bi bi-layers"></i> Manage Raw Materials</button>
+    <button type="button" onclick="showProductOperations()"><i class="bi bi-bag"></i> Manage Products</button><br><br>
+    <button type="button" onclick="showOrderOperations()" id="manage-order-button"><i class="bi bi-diagram-3"></i> Manage Orders</button>
 </center>
 
+<!-- Org Forms -->
 <div id="update-org" class="org">
     <form action="" method="put" id="update-org-form">
         <h3>Update Org</h3>
@@ -52,8 +57,14 @@ if(session.getAttribute("org-id") != null){
     </form>
 </div>
 
+<!-- Factory Forms -->
 <div id="factory" class="factory">
     <center><h2>Manage Factories</h2></center>
+    <!--<center>
+    <button type="button" onclick="showWorkerOperations()"><i class="bi bi-person-badge"></i> Manage Workers</button>
+    <button type="button" onclick="showMachineOperations()"><i class="bi bi-gear"></i> Manage Machines</button>
+    <button type="button" onclick="showRawMaterialOperations()"><i class="bi bi-layers"></i> Manage Raw Materials</button>
+    </center>-->
     <button type="button" onclick="closeFactoryOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
     <div id="add-factory">
         <form action="/factory/" method="post" id="add-factory-form">
@@ -142,6 +153,7 @@ if(session.getAttribute("org-id") != null){
     </div>
 </div>
 
+<!-- Worker Forms -->
 <div id="worker" class="worker">
     <center><h2>Manage Workers</h2></center>
     <button type="button" onclick="closeWorkerOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
@@ -221,6 +233,7 @@ if(session.getAttribute("org-id") != null){
     </div>
 </div>
 
+<!-- Customer and Vendor Forms -->
 <div id="customer-and-vendor" class="customer-and-vendor">
     <center><h2>Manage Customers And Vendors</h2></center>
     <button type="button" onclick="closeCustomerAndVendorOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
@@ -349,6 +362,374 @@ if(session.getAttribute("org-id") != null){
     </div>
 </div>
 
+<!-- Machine Forms -->
+<div id="machine" class="machine">
+    <center><h2>Manage Machines</h2></center>
+    <button type="button" onclick="closeMachineOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
+    <div id="add-machine">
+        <form action="" method="post" id="add-machine-form">
+            <h3>Add Machine</h3>
+            Machine Name : <input type="text" id="machine-name" name="machine-name" required><br>
+            Machine type Id :
+            <select id="machine-type-id" name="machine-type-id" required>
+            </select><br>
+            Factory Id :
+            <select id="machine-factory-id" name="machine-factory-id" required>
+            </select><br>
+            Repair Cost : <input type="number" name="machine-repair-cost" id="machine-repair-cost"><br>
+            <input type="submit" id="add-machine-submit-btn">
+        </form>
+    </div>
+    <div id="update-machine">
+        <form action="" method="put" id="update-machine-form">
+            <h3>Update Machine</h3>
+            Machine Id :
+            <input type="text" id="u-machine-id" name="u-machine-id" required><br>
+            Machine Name : <input type="text" id="u-machine-name" name="u-machine-name" required><br>
+            Product type Id :
+            <select id="u-machine-type-id" name="u-machine-type-id" required>
+            </select><br>
+            Factory Id :
+            <select id="u-machine-factory-id" name="u-machine-factory-id" required>
+            </select><br>
+            Repair Cost : <input type="number" name="u-machine-repair-cost"  id="u-machine-repair-cost"><br>
+            <input type="submit" id="u-machine-submit-btn">
+        </form>
+    </div>
+    <div id="delete-machine">
+        <form action="" method="delete" id="delete-machine-form">
+            <h3>Delete Machine</h3>
+            <input type="number" id="d-machine-id" required>
+            <input type="submit" id="d-machine-submit-btn">
+        </form>
+    </div>
+    <div id="get-machine">
+        <form action="" method="get" id="get-machine-form">
+            <h3>Get Machine</h3>
+            <input type="text" id="g-machine-id" required>
+            <input type="submit" id="g-machine-submit-btn">
+        </form>
+        <table id="machine-table">
+            <thead>
+            <tr>
+                <td>Machine Id</td>
+                <td>Machine Type</td>
+                <td>Machine Name</td>
+                <td>Machine Status</td>
+                <td>Factory Id</td>
+                <td>Factory Name</td>
+                <td>Repair Cost</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="get-machine-all">
+        <form action="" method="get" id="get-machine-all-form">
+            <h3>Get All Machines</h3>
+            <input type="submit" id="g-machine-all-submit-btn">
+        </form>
+        <table id="machine-all-table">
+            <thead>
+            <tr>
+                <td>Machine Id</td>
+                <td>Machine Type</td>
+                <td>Machine Name</td>
+                <td>Machine Status</td>
+                <td>Factory Id</td>
+                <td>Factory Name</td>
+                <td>Repair Cost</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- RawMaterial Forms -->
+<div id="raw-material" class="raw-material">
+    <center><h2>Manage RawMaterials</h2></center>
+    <button type="button" onclick="closeRawMaterialOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
+    <div id="add-raw-material">
+        <form action="" method="post" id="add-raw-material-form">
+            <h3>Add RawMaterial</h3>
+            RawMaterial Name : <input type="text" id="raw-material-name" name="raw-material-name" required><br>
+            Initial Quantity Available : <input type="number" name="raw-material-initial-quantity-available" id="raw-material-initial-quantity-available"><br>
+            Initial Quantity Required : <input type="number" name="raw-material-initial-quantity-required" id="raw-material-initial-quantity-required"><br>
+            Cost of Raw Material : <input type="number" name="raw-material-cost" id="raw-material-cost"><br>
+            <input type="submit" id="add-raw-material-submit-btn">
+        </form>
+    </div>
+    <div id="update-raw-material">
+        <form action="" method="put" id="update-raw-material-form">
+            <h3>Update RawMaterial</h3>
+            RawMaterial Id :
+            <input type="text" id="u-raw-material-id" name="u-raw-material-id" required><br>
+            RawMaterial Name : <input type="text" id="u-raw-material-name" name="u-raw-material-name" required><br>
+            New Quantity Available : <input type="number" name="u-raw-material-initial-quantity-available" id="u-raw-material-initial-quantity-available"><br>
+            New Quantity Required : <input type="number" name="u-raw-material-initial-quantity-required" id="u-raw-material-initial-quantity-required"><br>
+            Cost of Raw Material : <input type="number" name="raw-material-cost" id="u-raw-material-cost"><br>
+            <input type="submit" id="u-raw-material-submit-btn">
+        </form>
+    </div>
+    <div id="delete-raw-material">
+        <form action="" method="delete" id="delete-raw-material-form">
+            <h3>Delete RawMaterial</h3>
+            <input type="number" id="d-raw-material-id" required>
+            <input type="submit" id="d-raw-material-submit-btn">
+        </form>
+    </div>
+    <div id="get-raw-material">
+        <form action="" method="get" id="get-raw-material-form">
+            <h3>Get RawMaterial</h3>
+            <input type="text" id="g-raw-material-id" required>
+            <input type="submit" id="g-raw-material-submit-btn">
+        </form>
+        <table id="raw-material-table">
+            <thead>
+            <tr>
+                <td>RawMaterial Id</td>
+                <td>RawMaterial Name</td>
+                <td>Quantity Available</td>
+                <td>Quantity Required</td>
+                <td>Cost</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="get-raw-material-all">
+        <form action="" method="get" id="get-raw-material-all-form">
+            <h3>Get All RawMaterials</h3>
+            <input type="submit" id="g-raw-material-all-submit-btn">
+        </form>
+        <table id="raw-material-all-table">
+            <thead>
+            <tr>
+                <td>RawMaterial Id</td>
+                <td>RawMaterial Name</td>
+                <td>Quantity Available</td>
+                <td>Quantity Required</td>
+                <td>Cost</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Product Forms -->
+<div id="product" class="product">
+    <center><h2>Manage Products</h2></center>
+    <button type="button" onclick="closeProductOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
+    <div id="add-product">
+        <form action="" method="post" id="add-product-form">
+            <h3>Add Product</h3>
+            Name : <input type="text" id="product-name" name="product-name" required><br>
+            Product type Id :
+            <select id="product-type-id" name="product-type-id" required>
+            </select><br>
+            Initial Quantity Available : <input type="number" id="product-quantity-available" name="product-quantity-available">
+            Initial Quantity Required : <input type="number" id="product-quantity-required" name="product-quantity-required">
+            Production Time in Minutes : <input type="number" id="production-time-in-mins" name="production-time-in-mins">
+            Profit Percentage : <input type="number" id="profit-percentage" name="profit-percentage">
+            <input type="submit" id="add-product-submit-btn">
+        </form>
+    </div>
+    <div id="update-product">
+        <form action="" method="put" id="update-product-form">
+            <h3>Update Product</h3>
+            Product Id : <input type="number" id="u-product-id" name="u-profit-id">
+            Name : <input type="text" id="u-product-name" name="u-product-name" required><br>
+            Product type Id :
+            <select id="u-product-type-id" name="u-product-type-id" required>
+            </select><br>
+            New Quantity Available : <input type="number" id="u-product-quantity-available" name="u-product-quantity-available">
+            New Quantity Required : <input type="number" id="u-product-quantity-required" name="u-product-quantity-required">
+            Production Time in Minutes : <input type="number" id="u-production-time-in-mins" name="u-production-time-in-mins">
+            Profit Percentage : <input type="number" id="u-profit-percentage" name="u-profit-percentage">
+            <input type="submit" id="u-product-submit-btn">
+        </form>
+    </div>
+    <div id="delete-product">
+        <form action="" method="delete" id="delete-product-form">
+            <h3>Delete Product</h3>
+            <input type="text" id="d-product-id" required>
+            <input type="submit" id="d-product-submit-btn">
+        </form>
+    </div>
+    <div id="get-product">
+        <form action="" method="get" id="get-product-form">
+            <h3>Get Product</h3>
+            <input type="text" id="g-product-id" required>
+            <input type="submit" id="g-product-submit-btn">
+        </form>
+        <table id="product-table">
+            <thead>
+            <tr>
+                <td>Product Id</td>
+                <td>Product Name</td>
+                <td>Product Type</td>
+                <td>Quantity Available</td>
+                <td>Quantity Required</td>
+                <td>Cost Price</td>
+                <td>Selling Price</td>
+                <td>Production Time in Minutes</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="get-product-all">
+        <form action="" method="get" id="get-product-all-form">
+            <h3>Get All Products</h3>
+            <input type="submit" id="g-product-all-submit-btn">
+        </form>
+        <table id="product-all-table">
+            <thead>
+            <tr>
+                <td>Product Id</td>
+                <td>Product Name</td>
+                <td>Product Type</td>
+                <td>Quantity Available</td>
+                <td>Quantity Required</td>
+                <td>Cost Price</td>
+                <td>Selling Price</td>
+                <td>Production Time in Minutes</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Order Forms -->
+<div id="order" class="order">
+    <center><h2>Manage Orders</h2></center>
+    <button type="button" onclick="closeOrderOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
+    <div id="add-order">
+        <form action="" method="post" id="add-order-form">
+            <h3>Add Order</h3>
+            Order Type :
+            <select id="order-type" name="order-type" required>
+                <option value="--SELECT ORDER TYPE--">--SELECT ORDER TYPE--</option>
+                <option value="SALES">SALES</option>
+                <option value="PURCHASE">PURCHASE</option>
+            </select><br>
+            <div id="order-customer-id-div">
+                Customer Id :
+                <select type="number" id="order-customer-id" name="order-customer-id">
+                </select><br>
+            </div>
+            <div id="order-vendor-id-div">
+                Vendor Id :
+                <select type="number" id="order-vendor-id" name="order-vendor-id">
+                </select><br>
+            </div>
+            <h4>Select Product</h4>
+            <select id="productSelect">
+                <option value="">-- Select a Product --</option>
+            </select>
+            <button type="button" onclick="addproduct()">Add Product</button><br><br>
+            <h4>Selected Products</h4><br>
+            <div id="selectedProductsContainer">
+            </div>
+            <input type="submit" id="add-order-submit-btn">
+        </form>
+    </div>
+    <div id="delete-order">
+        <form action="" method="delete" id="delete-order-form">
+            <h3>Delete Order</h3>
+            <input type="text" id="d-order-id" required>
+            <input type="submit" id="d-order-submit-btn">
+        </form>
+    </div>
+    <div id="get-order">
+        <form action="" method="get" id="get-order-form">
+            <h3>Get Order</h3>
+            <input type="text" id="g-order-id" required>
+            <input type="submit" id="g-order-submit-btn">
+        </form>
+        <table id="order-table">
+            <thead>
+            <tr>
+                <td>Order Id</td>
+                <td>Product Id</td>
+                <td>Product</td>
+                <td>Quantity</td>
+                <td>Worker Id</td>
+                <td>Worker name</td>
+                <td>Machine Id</td>
+                <td>Machine Name</td>
+                <td>Start Time</td>
+                <td>End Time</td>
+                <td>Status</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="get-order-all">
+        <form action="" method="get" id="get-order-all-form">
+            <h3>Get All Orders</h3>
+            <input type="submit" id="g-order-all-submit-btn">
+        </form>
+        <table id="order-all-table">
+            <thead>
+            <tr>
+                <td>Order Id</td>
+                <td>Product Id</td>
+                <td>Product</td>
+                <td>Quantity</td>
+                <td>Worker Id</td>
+                <td>Worker name</td>
+                <td>Machine Id</td>
+                <td>Machine Name</td>
+                <td>Start Time</td>
+                <td>End Time</td>
+                <td>Status</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="update-po">
+        <form action="" method="put" id="update-po-form">
+            <h3>Mark Purchase Order as Received</h3>
+            Purchase Order Id :
+            <input type="number" id="u-po-id" name="u-po-id" required><br>
+            <input type="submit" id="u-po-submit-btn">
+        </form>
+    </div>
+
+    <div id="get-po-all">
+        <form action="" method="get" id="get-po-all-form">
+            <h3>Get All Purchase Orders</h3>
+            <input type="submit" id="g-po-all-submit-btn">
+        </form>
+        <table id="po-all-table">
+            <thead>
+            <tr>
+                <td>Order Id</td>
+                <td>Vendor Id</td>
+                <td>Order Type</td>
+                <td>Status</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <script>
     let userName = "<%= userName %>";

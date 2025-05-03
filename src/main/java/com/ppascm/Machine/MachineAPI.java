@@ -110,11 +110,10 @@ public class MachineAPI extends HttpServlet
 			int factoryId = object.getInt("factory_id");
 			int productTypeId = object.getInt("product_type_id");
 			String name = object.getString("name");
-			String status = object.getString("status");
 			int repairCost = object.getInt("repair_cost");
 			int machineId = object.getInt("machine_id");
 			try {
-				if(MachineBean.updateMachine(machineId, factoryId, productTypeId, name, status, repairCost))
+				if(MachineBean.updateMachine(machineId, factoryId, productTypeId, name, repairCost))
 				{
 					response.getWriter().write(Responses.RESPONSE_SUCCESS_MSG.toString());
 				} else {

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bill with Product Picker</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .product-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .product-row input[type="text"] { width: 60px; }
+        button { margin-top: 10px; padding: 8px 12px; }
+    </style>
+</head>
+<body>
+
+<h2>Create Bill</h2>
+
+<form id="billForm">
+
+    <!-- Bill Details -->
+    <div>
+        <label>Bill Number: <input type="text" name="billNumber" required></label><br><br>
+        <label>Customer Name: <input type="text" name="customerName" required></label><br><br>
+        <label>Date: <input type="date" name="billDate" required></label>
+    </div>
+
+    <hr>
+
+    <!-- Product Picker -->
+    <h4>Select Product</h4>
+    <select id="productSelect">
+        <option value="">-- Select a Product --</option>
+    </select>
+    <button type="button" onclick="addProduct()">Add Product</button>
+
+    <h4>Selected Products</h4>
+    <div id="selectedProductsContainer">
+        <!-- Selected products with quantity inputs will appear here -->
+    </div>
+
+    <button type="submit">Submit Bill</button>
+
+</form>
+
+<script>
+    // List of available products
+    const products = ["Product A", "Product B", "Product C", "Product D"];
+
+    // Keep track of added products
+    const addedProducts = new Set();
+
+    // Populate the dropdown
+    const select = document.getElementById('productSelect');
+    products.forEach(product => {
+        const option = document.createElement('option');
+        option.value = product;
+        option.textContent = product;
+        select.appendChild(option);
+    });
+
+    // Add selected product to the list
+    function addProduct() {
+        const selectedValue = select.value;
+        if (!selectedValue) {
+            alert('Please select a product.');
+            return;
+        }
+
+        if (addedProducts.has(selectedValue)) {
+            alert('This product has already been added.');
+            return;
+        }
+
+        addedProducts.add(selectedValue);
+
+        const container = document.getElementById('selectedProductsContainer');
+        const row = document.createElement('div');
+        row.className = 'product-row';
+        row.innerHTML = `
+        <label>${selectedValue}</label>
+        Quantity: <input type="text" name="quantity_${selectedValue.replace(/\s+/g, '')}" placeholder="Qty">
+      `;
+        container.appendChild(row);
+
+        // Reset dropdown
+        select.value = '';
+    }
+
+    // Handle form submission
+    document.getElementById('billForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        if (addedProducts.size === 0) {
+            alert('Please add at least one product.');
+            return;
+        }
+
+        let billDetails = "Bill submitted!\n";
+
+        addedProducts.forEach(productName => {
+            const quantityInputName = "quantity_" + productName.replace(/\s+/g, '');
+            const quantity = document.querySelector(`input[name="${quantityInputName}"]`).value;
+
+            if (!quantity || isNaN(quantity)) {
+                alert(`Please enter a valid quantity for ${productName}.`);
+                return;
+            }
+
+            billDetails += `\nProduct: ${productName}, Quantity: ${quantity}`;
+        });
+
+        alert(billDetails);
+
+        // You can now send the data to the server
+    });
+</script>
+
+</body>
+</html>
