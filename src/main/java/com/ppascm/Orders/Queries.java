@@ -38,7 +38,7 @@ public class Queries
 	protected static final String GET_ORDER_BY_ID = "select jt.order_id,jt.job_id,jt.worker_id,wt.name as worker_name,jt.machine_id,mt.name as machine_name,oj.product_id,pt.name as product_name,oj.quantity,jt.start_time,jt.end_time,jt.status from jobstable jt join OrdersAndJobs oj on oj.job_id = jt.job_id join WorkersTable wt on wt.worker_id = jt.worker_id join machinestable mt on mt.machine_id = jt.machine_id join ProductsTable pt on pt.product_id = oj.product_id where jt.order_id = ?";
 	protected static final String CHANGE_PO_STATUS = "update OrderStatus set status='RECEIVED', completed_date=? WHERE order_id = ? AND order_type = 'PURCHASE'";
 	protected static final String GET_PURCHASE_ORDERS = "select os.*, oj.product_id, pt.name, oj.quantity from OrderStatus os join OrdersAndJobs oj on os.order_id = oj.order_id join ProductsTable pt on pt.product_id = oj.product_id where order_type = 'PURCHASE'";
-	protected static final String ADD_ORDER_TRACKING = "INSERT INTO CustomerOrderTrackingTable(order_id, delivery_status) VALUES (?, ?)";
+	protected static final String ADD_ORDER_TRACKING = "INSERT IGNORE INTO CustomerOrderTrackingTable(order_id, delivery_status) VALUES (?, ?)";
 	protected static final String UPDATE_TRACKING = "UPDATE CustomerOrderTrackingTable SET delivery_status=? WHERE order_id=?";
 	protected static final String GET_PO_BY_ID = "select os.*, oj.product_id, pt.name, oj.quantity from OrderStatus os join OrdersAndJobs oj on os.order_id = oj.order_id join ProductsTable pt on pt.product_id = oj.product_id where order_type = 'PURCHASE' and os.order_id = ?";
 }

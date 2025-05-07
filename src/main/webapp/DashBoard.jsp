@@ -41,6 +41,7 @@ if(session.getAttribute("org-id") != null){
     <button type="button" onclick="showRawMaterialOperations()"><i class="bi bi-layers"></i> Manage Raw Materials</button>
     <button type="button" onclick="showProductOperations()"><i class="bi bi-bag"></i> Manage Products</button><br><br>
     <button type="button" onclick="showOrderOperations()" id="manage-order-button"><i class="bi bi-diagram-3"></i> Manage Orders</button>
+    <button type="button" onclick="showMaterialRequiredOperations()" id="manage-material-required-button"><i class="bi bi-file-earmark-spreadsheet"></i> Manage Raw Materials Requirements</button>
 </center>
 
 <!-- Org Forms -->
@@ -711,6 +712,21 @@ if(session.getAttribute("org-id") != null){
         </form>
     </div>
 
+    <div id="update-tracking">
+        <form action="" method="put" id="update-tracking-form">
+            <h3>UPDATE ORDER STATUS</h3>
+            Purchase Order Id :
+            <input type="number" id="u-tracking-id" name="u-tracking-id" required><br>
+            Status :
+            <select id="u-tracking-status">
+                <option value="SHIPPED">SHIPPED</option>
+                <option value="IN TRANSIT">IN TRANSIT</option>
+                <option value="DELIVERED">DELIVERED</option>
+            </select>
+            <input type="submit" id="u-tracking-submit-btn">
+        </form>
+    </div>
+
     <div id="get-po-all">
         <form action="" method="get" id="get-po-all-form">
             <h3>Get All Purchase Orders</h3>
@@ -751,6 +767,56 @@ if(session.getAttribute("org-id") != null){
                 <td>Completed Date</td>
                 <td>Product Id</td>
                 <td>Product Name</td>
+                <td>Quantity</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="material-required" class="material-required">
+    <center><h2>Manage materialRequired</h2></center>
+    <button type="button" onclick="closeMaterialRequiredOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
+    <div id="add-material-required">
+        <form action="" method="post" id="add-material-required-form">
+            <h3>Add materialRequired</h3>
+            Product Id :
+            <select id="material-required-product-id" name="material-required-product-id" required>
+            </select><br>
+            <h4>Select Raw Materials</h4>
+            <select id="rawMaterialSelect">
+                <option value="">-- Select a Raw Material --</option>
+            </select>
+            <button type="button" onclick="addMaterialR()">Add Raw Material</button><br><br>
+            <h4>Selected Raw Material</h4><br>
+            <div id="selectedRawMaterialsContainer">
+            </div>
+            <input type="submit" id="add-material-required-submit-btn">
+        </form>
+    </div>
+
+    <div id="delete-material-required">
+        <form action="" method="post" id="delete-material-required-form">
+            <h3>Delete materialRequired</h3>
+            Product Id :
+            <select id="d-material-required-product-id" name="material-required-product-id" required></select><br>
+            <input type="submit" id="delete-material-required-submit-btn">
+        </form>
+    </div>
+
+    <div id="get-bom">
+        <form action="" method="get" id="get-bom-form">
+            <h3>Get Bill Of Material</h3>
+            <select id="g-bom-id"></select><br>
+            <input type="submit" id="g-bom-submit-btn">
+        </form>
+        <table id="bom-table">
+            <thead>
+            <tr>
+                <td>Raw Material Id</td>
+                <td>Raw Material</td>
                 <td>Quantity</td>
             </tr>
             </thead>

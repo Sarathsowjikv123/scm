@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("order-customer-id-div").style.display="none";
     document.getElementById("order-vendor-id-div").style.display="none";
 
+    document.getElementById("material-required").style.display="none";
+
     document.getElementById("add-factory-form").addEventListener("submit", addFactory);
     document.getElementById("update-factory-form").addEventListener("submit", updateFactory);
     document.getElementById("delete-factory-form").addEventListener("submit", deleteFactory);
@@ -71,6 +73,11 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("update-po-form").addEventListener("submit", updatePO);
     document.getElementById("get-po-all-form").addEventListener("submit", getAllpo);
     document.getElementById("get-po-form").addEventListener("submit", getpobyId);
+    document.getElementById("update-tracking-form").addEventListener("submit", updateTracking);
+
+    document.getElementById("add-material-required-form").addEventListener("submit", addMaterialRequirements);
+    document.getElementById("delete-material-required-form").addEventListener("submit", deleteMaterialRequirements);
+    document.getElementById("get-bom-form").addEventListener("submit", getBOM);
 
 
 
@@ -99,6 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("order-table").style.display="none";
     document.getElementById("po-all-table").style.display="none";
     document.getElementById("po-table").style.display="none";
+
+    document.getElementById("bom-table").style.display="none";
+
 });
 
 const selectOrderType = document.getElementById('order-type');
@@ -945,6 +955,10 @@ const select = document.getElementById('productSelect');
 const addedProducts = [];
 const quantityOfProducts  = [];
 
+const selectRm = document.getElementById('rawMaterialSelect');
+let addedRms = [];
+let quantityOfRms  = [];
+
 function addOrder(event) {
     event.preventDefault();
     addedProducts.forEach(productName => {
@@ -1077,6 +1091,24 @@ function updatePO(event) {
     });
 }
 
+function updateTracking(event) {
+    console.log("UpdateTracking Called.")
+    event.preventDefault();
+    const url = "http://localhost:8080/order/tracking";
+    const data = {
+        order_id :document.getElementById("u-tracking-id").value,
+        order_status : document.getElementById("u-tracking-status").value,
+    };
+    console.log(url)
+    console.log(data)
+    sendPUTRequest(url, data, function(response) {
+        console.log("Response from server:", response);
+        for (let resp in response) {
+            alert(resp + " : " + response[resp]);
+        }
+    });
+}
+
 
 function getAllpo(event) {
     event.preventDefault();
@@ -1139,8 +1171,73 @@ function getpobyId(event) {
     });
 }
 
+//-------------*************----------------
+//MANAGE MATERIAL REQUIREMENTS
+//-------------*************----------------
 
+function addMaterialRequirements(event) {
+    event.preventDefault();
+    addedRms.forEach(RmName => {
+        const quantityInputName = "quantity_" + RmName.replace(/\s+/g, '');
+        const quantity = document.querySelector(`input[name="${quantityInputName}"]`).value;
+        quantityOfRms.push(quantity);
+    });
+    console.log("addedRms="+addedRms);
+    console.log("Quantity="+quantityOfRms);
+    console.log("add Material Requirements Called !!!");
+    const data = {
+        product_id : document.getElementById("material-required-product-id").value,
+        raw_materials : addedRms,
+        quantities : quantityOfRms
+    };
+    const url = "http://localhost:8080/material_requirements/";
+    sendPOSTRequest(url, data, function(response) {
+        console.log("Response from server:", response);
+        for (let resp in response) {
+            alert(resp + " : " + response[resp]);
+        }
+    });
+    document.getElementById('selectedRawMaterialsContainer').innerHTML = '';
+    addedRms = [];
+    quantityOfRms = [];
 
+}
+
+function deleteMaterialRequirements() {
+    event.preventDefault();
+    const url = "http://localhost:8080/material_requirements/"+document.getElementById("d-material-required-product-id").value+"/delete";
+    console.log(url)
+    sendDELETERequest(url, function(response) {
+        console.log("Response from server:", response);
+        if(response === null) {
+            alert("error");
+        } else {
+            alert("success");
+        }
+    });
+}
+
+function getBOM(event) {
+    event.preventDefault();
+    const bomId = document.getElementById("g-bom-id").value;
+    const url = "http://localhost:8080/material_requirements/"+bomId;
+    sendGETRequest(url, function(response) {
+        document.getElementById("bom-table").style.display="none";
+        document.getElementById("bom-table").style.display="block";
+        const tableBody = document.querySelector("#bom-table tbody");
+        tableBody.innerHTML = "";
+        console.log(response);
+        response.forEach(bom => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${bom.raw_material_id}</td>
+                <td>${bom.raw_material_name}</td>
+                <td>${bom.quantity}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    });
+}
 //-------------*************----------------
 //SHOW FORMS
 //-------------*************----------------
@@ -1396,6 +1493,93 @@ function addproduct() {
 function closeOrderOperations() {
     document.getElementById("order").style.display = "none";
 }
+
+//-------------*************----------------
+//SHOW MATERIAL REQUIREMENTS
+//-------------*************----------------
+
+function addMaterialR() {
+    const selectedValue = selectRm.value;
+    const selectedText = selectRm.options[selectRm.selectedIndex].text;
+    if (!selectedValue) {
+        alert('Please select a Raw Material.');
+        return;
+    }
+    if (addedRms.includes(selectedValue)) {
+        alert('This Raw Material has already been added.');
+        return;
+    }
+    addedRms.push(selectedValue);
+    const container = document.getElementById('selectedRawMaterialsContainer');
+    const row = document.createElement('div');
+    row.className = 'rm-row';
+    row.innerHTML = `
+        <label>${selectedText}</label>
+        <input type="text" name="quantity_${selectedValue.replace(/\s+/g, '')}" placeholder="Quantity">
+      `;
+    container.appendChild(row);
+    selectRm.value = '';
+}
+
+function closeMaterialRequiredOperations() {
+    document.getElementById("material-required").style.display = "none";
+}
+
+function showMaterialRequiredOperations() {
+    removeAllDiv();
+    document.getElementById("material-required").style.display = "block";
+    const url = "http://localhost:8080/product/";
+    sendGETRequest(url, function(response) {
+        //Populating Factory Option in add machines form
+        const select = document.getElementById('material-required-product-id');
+        select.innerHTML = '';
+        response.forEach(res => {
+            const option = document.createElement('option');
+            option.value = res.product_id;
+            option.textContent = res.name;
+            select.appendChild(option);
+        });
+    });
+
+    const rurl = "http://localhost:8080/raw_material/";
+    sendGETRequest(rurl, function(response) {
+        //Populating Factory Option in add machines form
+        const select = document.getElementById('rawMaterialSelect');
+        select.innerHTML = '';
+        response.forEach(res => {
+            const option = document.createElement('option');
+            option.value = res.rawMaterial_id;
+            option.textContent = res.name;
+            select.appendChild(option);
+        });
+    });
+
+    const purl = "http://localhost:8080/product/";
+    sendGETRequest(purl, function(response) {
+        //Populating Factory Option in add machines form
+        const select = document.getElementById('g-bom-id');
+        select.innerHTML = '';
+        response.forEach(res => {
+            const option = document.createElement('option');
+            option.value = res.product_id;
+            option.textContent = res.name;
+            select.appendChild(option);
+        });
+    });
+
+    const purl2 = "http://localhost:8080/product/";
+    sendGETRequest(purl2, function(response) {
+        //Populating Factory Option in add machines form
+        const select = document.getElementById('d-material-required-product-id');
+        select.innerHTML = '';
+        response.forEach(res => {
+            const option = document.createElement('option');
+            option.value = res.product_id;
+            option.textContent = res.name;
+            select.appendChild(option);
+        });
+    });
+}
 //-------------*************----------------
 //SENDING REQUESTS
 //-------------*************----------------
@@ -1486,5 +1670,6 @@ function removeAllDiv(){
     document.getElementById("raw-material").style.display = "none";
     document.getElementById("product").style.display = "none";
     document.getElementById("order").style.display = "none";
-    document.getElementById("machine").style.display = "none";
+    document.getElementById("machine").style.display = "none"
+    document.getElementById("material-required").style.display = "none";
 }

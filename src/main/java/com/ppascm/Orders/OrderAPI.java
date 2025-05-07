@@ -210,6 +210,31 @@ public class OrderAPI extends HttpServlet
 			{
 				throw new RuntimeException(e);
 			}
+		} else if (pathInfo.equals("/tracking")) {
+			StringBuilder json = new StringBuilder();
+			String line;
+			try(BufferedReader reader = request.getReader())
+			{
+				while((line = reader.readLine()) != null)
+				{
+					json.append(line);
+				}
+			}
+			JSONObject object = new JSONObject(json.toString());
+			int orderId = object.getInt("order_id");
+			String status = object.getString("order_status");
+			try
+			{
+				if(OrderBean.updateOrderTracking(orderId, status)){
+					response.getWriter().write(Responses.RESPONSE_SUCCESS_MSG.toString());
+				} else {
+					response.getWriter().write(Responses.RESPONSE_FAIL_MSG.toString());
+				}
+			}
+			catch(SQLException e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

@@ -120,12 +120,12 @@ public class OrderBean
 		ps.executeUpdate();
 	}
 
-	public static void updateOrderTracking(int orderId, String status) throws SQLException {
+	public static boolean updateOrderTracking(int orderId, String status) throws SQLException {
 		Connection conn = DBConnection.getConnection();
 		PreparedStatement ps = conn.prepareStatement(Queries.UPDATE_TRACKING);
 		ps.setString(1, status);
 		ps.setInt(2, orderId);
-		ps.executeUpdate();
+		return ps.executeUpdate() > 0;
 	}
 
 	public static boolean changePurchaseOrderStatus(int orderID, String status) throws SQLException {
@@ -489,18 +489,38 @@ public class OrderBean
 			obj.put("order_id", rs.getInt(1));
 			obj.put("job_id", rs.getInt(2));
 			obj.put("worker_id", rs.getInt(3));
-			obj.put("worker_name", rs.getString(4));
+			if(rs.getString(4) != null)
+			{
+				obj.put("worker_name", rs.getString(4));
+			} else {
+				obj.put("worker_name", "Worker Not Assigned");
+			}
 			obj.put("machine_id", rs.getInt(5));
-			obj.put("machine_name", rs.getString(6));
+			if(rs.getString(4) != null)
+			{
+				obj.put("machine_name", rs.getString(6));
+			} else {
+				obj.put("machine_name", "Machine Not Assigned");
+			}
 			obj.put("product_id", rs.getInt(7));
 			obj.put("product_name", rs.getString(8));
 			obj.put("quantity", rs.getInt(9));
-			LocalDateTime startTime = LocalDateTime.parse(rs.getString(10), formatter);
-			String startTimeFormatted = startTime.format(outputFormatter);
-			obj.put("start_time", startTimeFormatted);
-			LocalDateTime endTime = LocalDateTime.parse(rs.getString(11), formatter);
-			String endTimeFormatted = endTime.format(outputFormatter);
-			obj.put("end_time", endTimeFormatted);
+			if(rs.getString(10) != null)
+			{
+				LocalDateTime startTime = LocalDateTime.parse(rs.getString(10), formatter);
+				String startTimeFormatted = startTime.format(outputFormatter);
+				obj.put("start_time", startTimeFormatted);
+			} else {
+				obj.put("start_time", "Not Started");
+			}
+			if(rs.getString(11) != null)
+			{
+				LocalDateTime endTime = LocalDateTime.parse(rs.getString(11), formatter);
+				String endTimeFormatted = endTime.format(outputFormatter);
+				obj.put("end_time", endTimeFormatted);
+			} else {
+				obj.put("end_time", "Not Started");
+			}
 			obj.put("status", rs.getString(12));
 			ordersArray.put(obj);
 		}

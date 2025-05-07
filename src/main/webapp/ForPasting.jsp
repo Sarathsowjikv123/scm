@@ -1,66 +1,40 @@
-<!-- Order Forms -->
-<div id="order" class="order">
-    <center><h2>Manage Orders</h2></center>
-    <button type="button" onclick="closeOrderOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
-    <div id="add-order">
-        <form action="" method="post" id="add-order-form">
-            <h3>Add Order</h3>
-            Order Type :
-            <select id="order-type" name="order-type" required>
-                <option value="SALES">SALES</option>
-                <option value="PURCHASE">PURCHASE</option>
+<div id="material-required" class="material-required">
+    <center><h2>Manage materialRequired</h2></center>
+    <button type="button" onclick="closematerialRequiredOperations()" class="close-button"><i class="bi bi-x"></i> Close</button>
+    <div id="add-material-required">
+        <form action="" method="post" id="add-material-required-form">
+            <h3>Add materialRequired</h3>
+            Product Id :
+            <select id="material-required-product-id" name="material-required-product-id" required>
             </select><br>
-            <div id="order-customer-id-div">
-                Customer Id :
-                <select id="order-customer-id" name="order-customer-id" required>
-                </select><br>
+            <h4>Select Raw Materials</h4>
+            <select id="rawMaterialSelect">
+                <option value="">-- Select a Raw Material --</option>
+            </select>
+            <button type="button" onclick="addrawMaterial()">Add Raw Material</button><br><br>
+            <h4>Selected Raw Material</h4><br>
+            <div id="selectedRawMaterialsContainer">
             </div>
-            <div id="order-vendor-id-div">
-                Vendor Id :
-                <select id="order-vendor-id" name="order-vendor-id" required>
-                </select><br>
-            </div>
-            <h4>Select Products</h4>
-            <div id="productsContainer">
-                <!-- Products will be populated here -->
-            </div>
-            <input type="submit" id="add-order-submit-btn">
+            <input type="submit" id="add-material-required-submit-btn">
         </form>
     </div>
-    <!--
-        <div id="update-order">
-            <form action="" method="put" id="update-order-form">
-                <h3>Update Order</h3>
-                Order Id :
-                <input type="text" id="u-order-id" name="u-order-id" required><br>
-                Name : <input type="text" id="u-order-name" name="u-order-name" required><br>
-                Product type Id :
-                <select id="u-order-type-id" name="u-order-type-id" required>
-                </select><br>
-                Factory Id :
-                <select id="u-order-factory-id" name="u-order-factory-id" required>
-                </select><br>
-                <input type="submit" id="u-order-submit-btn">
-            </form>
-        </div>
-    -->
-    <div id="delete-order">
-        <form action="" method="delete" id="delete-order-form">
-            <h3>Delete Order</h3>
-            <input type="text" id="d-order-id" required>
-            <input type="submit" id="d-order-submit-btn">
+    <div id="delete-material-required">
+        <form action="" method="delete" id="delete-material-required-form">
+            <h3>Delete materialRequired</h3>
+            <input type="text" id="d-material-required-id" required>
+            <input type="submit" id="d-material-required-submit-btn">
         </form>
     </div>
-    <div id="get-order">
-        <form action="" method="get" id="get-order-form">
-            <h3>Get Order</h3>
-            <input type="text" id="g-order-id" required>
-            <input type="submit" id="g-order-submit-btn">
+    <div id="get-material-required">
+        <form action="" method="get" id="get-material-required-form">
+            <h3>Get materialRequired</h3>
+            <input type="text" id="g-material-required-id" required>
+            <input type="submit" id="g-material-required-submit-btn">
         </form>
-        <table id="order-table">
+        <table id="material-required-table">
             <thead>
             <tr>
-                <td>Order Id</td>
+                <td>materialRequired Id</td>
                 <td>Product Id</td>
                 <td>Product</td>
                 <td>Quantity</td>
@@ -77,15 +51,15 @@
             </tbody>
         </table>
     </div>
-    <div id="get-order-all">
-        <form action="" method="get" id="get-order-all-form">
-            <h3>Get All Orders</h3>
-            <input type="submit" id="g-order-all-submit-btn">
+    <div id="get-material-required-all">
+        <form action="" method="get" id="get-material-required-all-form">
+            <h3>Get All materialRequired</h3>
+            <input type="submit" id="g-material-required-all-submit-btn">
         </form>
-        <table id="order-all-table">
+        <table id="material-required-all-table">
             <thead>
             <tr>
-                <td>Order Id</td>
+                <td>materialRequired Id</td>
                 <td>Product Id</td>
                 <td>Product</td>
                 <td>Quantity</td>
@@ -96,6 +70,78 @@
                 <td>Start Time</td>
                 <td>End Time</td>
                 <td>Status</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="update-po">
+        <form action="" method="put" id="update-po-form">
+            <h3>Mark Purchase materialRequired as Received</h3>
+            Purchase materialRequired Id :
+            <input type="number" id="u-po-id" name="u-po-id" required><br>
+            <input type="submit" id="u-po-submit-btn">
+        </form>
+    </div>
+
+    <div id="update-tracking">
+        <form action="" method="put" id="update-tracking-form">
+            <h3>UPDATE ORDER STATUS</h3>
+            Purchase materialRequired Id :
+            <input type="number" id="u-tracking-id" name="u-tracking-id" required><br>
+            Status :
+            <select id="u-tracking-status">
+                <option value="SHIPPED">SHIPPED</option>
+                <option value="IN TRANSIT">IN TRANSIT</option>
+                <option value="DELIVERED">DELIVERED</option>
+            </select>
+            <input type="submit" id="u-tracking-submit-btn">
+        </form>
+    </div>
+
+    <div id="get-po-all">
+        <form action="" method="get" id="get-po-all-form">
+            <h3>Get All Purchase materialRequired</h3>
+            <input type="submit" id="g-po-all-submit-btn">
+        </form>
+        <table id="po-all-table">
+            <thead>
+            <tr>
+                <td>materialRequired Id</td>
+                <td>Vendor Id</td>
+                <td>materialRequired Type</td>
+                <td>Status</td>
+                <td>materialRequired Date</td>
+                <td>Completed Date</td>
+                <td>Product Id</td>
+                <td>Product Name</td>
+                <td>Quantity</td>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="get-po">
+        <form action="" method="get" id="get-po-form">
+            <h3>Get Purchase materialRequired</h3>
+            <input type="text" id="g-po-id" required>
+            <input type="submit" id="g-po-submit-btn">
+        </form>
+        <table id="po-table">
+            <thead>
+            <tr>
+                <td>materialRequired Id</td>
+                <td>Vendor Id</td>
+                <td>materialRequired Type</td>
+                <td>Status</td>
+                <td>materialRequired Date</td>
+                <td>Completed Date</td>
+                <td>Product Id</td>
+                <td>Product Name</td>
+                <td>Quantity</td>
             </tr>
             </thead>
             <tbody>
