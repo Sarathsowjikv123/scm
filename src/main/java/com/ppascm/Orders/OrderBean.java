@@ -12,15 +12,47 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONPropertyIgnore;
 
+import com.ppascm.CustomerAndVendor.CustomerAndVendorBean;
 import com.ppascm.DBConnection.DBConnection;
+import com.ppascm.EmailSender;
+import com.ppascm.Product.ProductBean;
+import com.ppascm.RawMaterial.RawMaterialBean;
 
 public class OrderBean
 {
+	public static JSONArray isRawMaterialAvailable(JSONArray products, JSONArray quantities) throws SQLException{
+		JSONArray requirements = new JSONArray();
+		Connection conn = DBConnection.getConnection();
+		for(int i=0; i<products.length(); i++)
+		{
+			PreparedStatement ps = conn.prepareStatement(Queries.GET_RAW_MATERIALS_FOR_A_PRODUCT);
+			ps.setInt(1, products.getInt(i));
+			ResultSet rs = ps.executeQuery();
+			while(rs.next())
+			{
+				int rawMaterialId = rs.getInt(1);
+				String name = rs.getString(2);
+				int quantityR = rs.getInt(3) * quantities.getInt(i);
+				int quantityA = rs.getInt(4);
+				if(quantityA < quantityR)
+				{
+					JSONObject req = new JSONObject();
+					req.put("raw_material_id",rawMaterialId);
+					req.put("name", name);
+					req.put("quantity",quantityR - quantityA);
+					requirements.put(req);
+				}
+			}
+		}
+		return requirements;
+	}
 	public static boolean createOrder(String orderType, int customerOrVendorId, String status, JSONArray products, JSONArray quantities) throws SQLException
 	{
 		int allJobs = 0;
@@ -574,5 +606,42 @@ public class OrderBean
 			ordersArray.put(obj);
 		}
 		return ordersArray;
+	}
+
+	public static boolean sendConfirmationEmail(String orderType, int customerOrVendorId, String status, JSONArray products, JSONArray quantities) throws SQLException
+	{
+		String custOrVendorEmail;
+		String subject = "";
+		String body = "";
+		int totalPrice = 0;
+		if(orderType.equals("SALES")) {
+			JSONObject custInfo = CustomerAndVendorBean.getCustomerById(customerOrVendorId);
+			custOrVendorEmail = CustomerAndVendorBean.getEmailFromCustomerID(customerOrVendorId);
+			subject = "PRODUCTION PLANNING AND SUPPLY CHAIN MANAGEMENT - Sales Order Summary";
+			body = "**********Sales Bill********** \n"+
+				"CUSTOMER NAME : "+custInfo.getString("name")+"\n"+
+				"PRODUCTS \n";
+			for(int i=0; i<products.length(); i++) {
+				JSONObject productInfo = ProductBean.getProductById(products.getInt(i));
+				body = body + productInfo.getString("name") + " * " + quantities.getInt(i) + " = Rs." + productInfo.getInt("selling_price") * quantities.getInt(i) + "\n";
+				totalPrice = totalPrice + (productInfo.getInt("selling_price") * quantities.getInt(i));
+			}
+			body = body + "TOTAL PRICE = Rs." + totalPrice;
+		} else {
+			JSONObject vendInfo = CustomerAndVendorBean.getVendorById(customerOrVendorId);
+			custOrVendorEmail = CustomerAndVendorBean.getEmailFromVendorID(customerOrVendorId);
+			subject = "PRODUCTION PLANNING AND SUPPLY CHAIN MANAGEMENT - Purchase Order Summary";
+			body = "**********Purchase Bill********** \n"+
+				"VENDOR NAME : "+vendInfo.getString("name")+"\n"+
+				"RAW MATERIALS \n";
+			for(int i=0; i<products.length(); i++) {
+				JSONObject productInfo = RawMaterialBean.getRawMaterialById(products.getInt(i));
+				body = body + productInfo.getString("name") + " * " + quantities.getInt(i) + " = Rs." + productInfo.getInt("price") * quantities.getInt(i) + "\n";
+				totalPrice = totalPrice + (productInfo.getInt("price") * quantities.getInt(i));
+			}
+			body = body + "TOTAL PRICE = Rs." + totalPrice;
+		}
+		//EmailSender.sendEmail(custOrVendorEmail, subject, body);
+		return true;
 	}
 }

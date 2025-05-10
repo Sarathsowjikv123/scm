@@ -14,5 +14,6 @@ public class Queries
 	protected static final String UPDATE_VENDOR_QUERY = "UPDATE VendorsTable SET name=?,email=? WHERE vendor_id = ?";
 	protected static final String DELETE_CUSTOMER_QUERY = "DELETE FROM CustomersTable WHERE customer_id=?";
 	protected static final String DELETE_VENDOR_QUERY = "DELETE FROM VendorsTable WHERE vendor_id=?";
-
+	protected static final String GET_CUSTOMER_EMAIL = "select email from customerstable where customer_id = ?";
+	protected static final String GET_VENDOR_EMAIL = "select email from VendorsTable where vendor_id = ?";
 }

@@ -10,11 +10,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.ppascm.CustomerAndVendor.CustomerAndVendorBean;
 import com.ppascm.DBConnection.DBConnection;
+import com.ppascm.EmailSender;
 import com.ppascm.Machine.MachineBean;
 
 @WebServlet("/order/*")
@@ -47,13 +50,23 @@ public class OrderAPI extends HttpServlet
 			{
 				conn = DBConnection.getConnection();
 				conn.setAutoCommit(false);
+				if(orderType.equals("SALES"))
+				{
+					JSONArray requirements = OrderBean.isRawMaterialAvailable(products, quantities);
+					if(!requirements.isEmpty())
+					{
+						response.getWriter().write(requirements.toString());
+						return;
+					}
+				}
 				OrderBean.createOrder(orderType, customerOrVendorId, status, products, quantities);
+				OrderBean.sendConfirmationEmail(orderType, customerOrVendorId, status, products, quantities);
 				conn.commit();
 				response.getWriter().write(Responses.RESPONSE_SUCCESS_MSG.toString());
+
 			}
 			catch(SQLException e)
 			{
-
 				try
 				{
 					conn.rollback();

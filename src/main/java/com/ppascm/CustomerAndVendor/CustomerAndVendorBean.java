@@ -134,4 +134,26 @@ public class CustomerAndVendorBean
 		ps.setInt(1, vendorId);
 		return ps.executeUpdate() > 0;
 	}
+
+	public static String getEmailFromCustomerID(int customerID) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = conn.prepareStatement(Queries.GET_CUSTOMER_EMAIL);
+		ps.setInt(1, customerID);
+		ResultSet rs = ps.executeQuery();
+		if(rs.next()) {
+			return rs.getString(1);
+		}
+		return null;
+	}
+
+	public static String getEmailFromVendorID(int vendorID) throws SQLException {
+		Connection conn = DBConnection.getConnection();
+		PreparedStatement ps = conn.prepareStatement(Queries.GET_VENDOR_EMAIL);
+		ps.setInt(1, vendorID);
+		ResultSet rs = ps.executeQuery();
+		if(rs.next()) {
+			return rs.getString(1);
+		}
+		return null;
+	}
 }

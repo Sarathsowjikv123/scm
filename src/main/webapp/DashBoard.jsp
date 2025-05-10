@@ -494,7 +494,7 @@ if(session.getAttribute("org-id") != null){
                 <td>RawMaterial Id</td>
                 <td>RawMaterial Name</td>
                 <td>Quantity Available</td>
-                <td>Quantity Required</td>
+                <!--<td>Quantity Required</td>-->
                 <td>Cost</td>
             </tr>
             </thead>
@@ -513,7 +513,7 @@ if(session.getAttribute("org-id") != null){
                 <td>RawMaterial Id</td>
                 <td>RawMaterial Name</td>
                 <td>Quantity Available</td>
-                <td>Quantity Required</td>
+                <!--<td>Quantity Required</td>-->
                 <td>Cost</td>
             </tr>
             </thead>
@@ -576,7 +576,7 @@ if(session.getAttribute("org-id") != null){
                 <td>Product Name</td>
                 <td>Product Type</td>
                 <td>Quantity Available</td>
-                <td>Quantity Required</td>
+                <!--<td>Quantity Required</td>-->
                 <td>Cost Price</td>
                 <td>Selling Price</td>
                 <td>Production Time in Minutes</td>
@@ -598,7 +598,7 @@ if(session.getAttribute("org-id") != null){
                 <td>Product Name</td>
                 <td>Product Type</td>
                 <td>Quantity Available</td>
-                <td>Quantity Required</td>
+                <!--<td>Quantity Required</td>-->
                 <td>Cost Price</td>
                 <td>Selling Price</td>
                 <td>Production Time in Minutes</td>
@@ -703,19 +703,10 @@ if(session.getAttribute("org-id") != null){
         </table>
     </div>
 
-    <div id="update-po">
-        <form action="" method="put" id="update-po-form">
-            <h3>Mark Purchase Order as Received</h3>
-            Purchase Order Id :
-            <input type="number" id="u-po-id" name="u-po-id" required><br>
-            <input type="submit" id="u-po-submit-btn">
-        </form>
-    </div>
-
     <div id="update-tracking">
         <form action="" method="put" id="update-tracking-form">
             <h3>UPDATE ORDER STATUS</h3>
-            Purchase Order Id :
+            Sales Order Id :
             <input type="number" id="u-tracking-id" name="u-tracking-id" required><br>
             Status :
             <select id="u-tracking-status">
@@ -724,6 +715,15 @@ if(session.getAttribute("org-id") != null){
                 <option value="DELIVERED">DELIVERED</option>
             </select>
             <input type="submit" id="u-tracking-submit-btn">
+        </form>
+    </div>
+
+    <div id="update-po">
+        <form action="" method="put" id="update-po-form">
+            <h3>Mark Purchase Order as Received</h3>
+            Purchase Order Id :
+            <input type="number" id="u-po-id" name="u-po-id" required><br>
+            <input type="submit" id="u-po-submit-btn">
         </form>
     </div>
 

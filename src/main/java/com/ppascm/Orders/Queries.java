@@ -41,4 +41,5 @@ public class Queries
 	protected static final String ADD_ORDER_TRACKING = "INSERT IGNORE INTO CustomerOrderTrackingTable(order_id, delivery_status) VALUES (?, ?)";
 	protected static final String UPDATE_TRACKING = "UPDATE CustomerOrderTrackingTable SET delivery_status=? WHERE order_id=?";
 	protected static final String GET_PO_BY_ID = "select os.*, oj.product_id, pt.name, oj.quantity from OrderStatus os join OrdersAndJobs oj on os.order_id = oj.order_id join ProductsTable pt on pt.product_id = oj.product_id where order_type = 'PURCHASE' and os.order_id = ?";
+	protected static final String GET_RAW_MATERIALS_FOR_A_PRODUCT = "SELECT prt.raw_material_id, rmt.name as raw_material_name, prt.raw_material_quantity, rmt.quantity_available FROM productrawmaterialstable prt join RawMaterialsTable rmt on prt.raw_material_id = rmt.raw_material_id WHERE product_id = ?";
 }

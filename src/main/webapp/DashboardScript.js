@@ -117,6 +117,8 @@ selectOrderType.addEventListener('change', function() {
     const selectedValue = selectOrderType.value;
     const selectedText = selectOrderType.options[selectOrderType.selectedIndex].text;
     if(selectedValue === "SALES") {
+        document.getElementById('order-customer-id').innerHTML = ''
+        document.getElementById('order-vendor-id').innerHTML = '';
         document.getElementById("order-customer-id-div").style.display="block";
         document.getElementById("order-vendor-id-div").style.display="none";
 
@@ -803,9 +805,9 @@ function getAllRawMaterials(event) {
                     <td>${raw_material.rawMaterial_id}</td>
                     <td>${raw_material.name}</td>
                     <td>${raw_material.quantity_avail}</td>
-                    <td>${raw_material.quantity_req}</td>
                     <td>${raw_material.price}</td>
                 `;
+//            <td>${raw_material.quantity_req}</td>
             tableBody.appendChild(row);
         });
     });
@@ -829,9 +831,9 @@ function getRawMaterial(event) {
                     <td>${response.rawMaterial_id}</td>
                     <td>${response.name}</td>
                     <td>${response.quantity_avail}</td>
-                    <td>${response.quantity_req}</td>
                     <td>${response.price}</td>
                 `;
+//            <td>${response.quantity_req}</td>
             tableBody.appendChild(row);
         }
     });
@@ -909,11 +911,11 @@ function getAllProducts(event) {
                 <td>${product.name}</td>
                 <td>${product.product_type}</td>
                 <td>${product.quantity_avail}</td>
-                <td>${product.quantity_req}</td>
                 <td>${product.cost_price}</td>
                 <td>${product.selling_price}</td>
                 <td>${product.prod_time_in_mins}</td>
             `;
+//          <td>${product.quantity_req}</td>
             tableBody.appendChild(row);
         });
     });
@@ -938,11 +940,11 @@ function getProduct(event) {
                 <td>${response.name}</td>
                 <td>${response.product_type}</td>
                 <td>${response.quantity_avail}</td>
-                <td>${response.quantity_req}</td>
                 <td>${response.cost_price}</td>
                 <td>${response.selling_price}</td>
                 <td>${response.prod_time_in_mins}</td>
             `;
+//          <td>${response.quantity_req}</td>
             tableBody.appendChild(row);
         }
     });
@@ -989,9 +991,16 @@ function addOrder(event) {
     console.log(data);
     sendPOSTRequest(url, data, function(response) {
         console.log("Response from server:", response);
-        for (let resp in response) {
-            alert(resp + " : " + response[resp]);
+        if(response.status === "success") {
+            alert(JSON.stringify(response))
+            return
         }
+        let re=[];
+
+        response.forEach(r => {
+            re.push(`Material: ${r.name}, Quantity: ${r.quantity}, ID: ${r.raw_material_id}`);
+        })
+        alert("Raw Materials Not Available Need to BackOrder => "+re.join("\n"))
     });
 
     document.getElementById('selectedProductsContainer').innerHTML = '';
@@ -1328,6 +1337,10 @@ function showWorkerOperations() {
 
 function closeWorkerOperations() {
     document.getElementById("worker").style.display = "none";
+    document.getElementById("worker-type-id").innerHTML = '';
+    document.getElementById("worker-factory-id").innerHTML = '';
+    document.getElementById("u-worker-type-id").innerHTML = '';
+    document.getElementById("u-worker-factory-id").innerHTML = '';
 }
 
 function showCustomerAndVendorOperations() {
@@ -1390,6 +1403,10 @@ function showMachineOperations() {
 
 function closeMachineOperations() {
     document.getElementById("machine").style.display = "none";
+    document.getElementById("machine-type-id").innerHTML = '';
+    document.getElementById("machine-factory-id").innerHTML = '';
+    document.getElementById("u-machine-type-id").innerHTML = '';
+    document.getElementById("u-machine-factory-id").innerHTML = '';
 }
 
 function showRawMaterialOperations() {
@@ -1431,6 +1448,8 @@ function showProductOperations() {
 
 function closeProductOperations() {
     document.getElementById("product").style.display = "none";
+    document.getElementById("product-type-id").innerHTML = '';
+    document.getElementById("u-product-type-id").innerHTML = '';
 }
 
 function showOrderOperations() {
